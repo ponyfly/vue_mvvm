@@ -14,21 +14,21 @@ class Vue {
 // 数据劫持
 function observer(vm, data) {
   for (const key in data) {
-    defineReactive(vm, key, data[key])
+    defineReactive(vm, key, data)
   }
 }
 
 // 定义属性
-function defineReactive(obj, key , val) {
+function defineReactive(obj, key , target) {
   const dep = new Dep()
   Object.defineProperty(obj, key, {
     get() {
       Dep.target && dep.addSub(Dep.target)
-      return val
+      return target[key]
     },
     set(newVal) {
-      if (newVal === val) return
-      val = newVal
+      if (newVal === target[key]) return
+      target[key] = newVal
       dep.notify()
     }
   })
@@ -83,7 +83,6 @@ function compile(node, vm) {
         if (node.tagName.toLowerCase() === 'input') {
           if (node.hasAttribute('v-model')) {
             node.addEventListener('input', function(e) {
-              console.log(e)
               vm[node.getAttribute('v-model')] = e.target.value
             })
           }
